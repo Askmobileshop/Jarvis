@@ -12,12 +12,20 @@ if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000)
 @app.route("/webhook", methods=["GET", "POST"])
 def webhook():
-    if request.method == "GET":
-        token = request.args.get("hub.verify_token")
-        challenge = request.args.get("hub.challenge")
-        if token == "Ask.143":
-            return challenge, 200
-        else:
-            return "Invalid verification token", 403
-    elif request.method == "POST":
-        return "OK", 200
+@app.route('/webhook', methods=['GET', 'POST'])
+def webhook():
+    if request.method == 'GET':
+        mode = request.args.get('hub.mode')
+        token = request.args.get('hub.verify_token')
+        challenge = request.args.get('hub.challenge')
+        if mode and token:
+            if mode == 'subscribe' and token == 'Ask_143':
+                return challenge, 200
+            else:
+                return 'Forbidden', 403
+        return 'Error', 400
+    
+    elif request.method == 'POST':
+        data = request.json
+        print(data) 
+        return 'ok',200
